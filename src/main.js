@@ -4,7 +4,7 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 import { fetchGallery } from './js/pixabay-api';
-import { galleryTemplate } from './js/render-functions';
+import { galleryTemplate } from './js/render-function';
 
 const refs = {
   formElem: document.querySelector('.form'),
@@ -12,30 +12,32 @@ const refs = {
   loader: document.querySelector('.loader'),
 };
 
+let query = '';
+let currentPage = 1;
+let maxPage = 1;
+const perPage = 15;
+
 refs.formElem.addEventListener('submit', requestImgGallery);
 
-function requestImgGallery(e) {
+async function requestImgGallery(e) {
   e.preventDefault();
 
-  const valueInput = e.target.elements.searchField.value;
+  query = e.target.elements.searchField.value.trim();
+  currentPage = 1;
   showLoader();
-  fetchGallery(valueInput)
-    .then(data => {
-      // console.log(data);
-      // galleryTemplate(data.hits);
-      if (data.total === 0) {
-        showError();
-      }
-      const markup = galleryTemplate(data.hits);
-      refs.ulElem.innerHTML = markup;
-      lightbox.refresh();
-    })
-    .catch(() => {
-      warningError();
-    })
-    .finally(() => {
-      hideLoader();
-    });
+  try {
+    const data = await fetchGallery(query, currentPage);
+    console.log(data);
+    if (data.total === 0) {
+      showError();
+    }
+    const markup = galleryTemplate(data.hits);
+    refs.ulElem.innerHTML = markup;
+    lightbox.refresh();
+  } catch {
+    warningError();
+  }
+  hideLoader();
   refs.formElem.reset();
 }
 
