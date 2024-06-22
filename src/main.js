@@ -10,6 +10,7 @@ const refs = {
   formElem: document.querySelector('.form'),
   ulElem: document.querySelector('.js-gallery'),
   loader: document.querySelector('.loader'),
+  btnLoadMore: document.querySelector('.load-more-btn'),
 };
 
 let query = '';
@@ -25,15 +26,18 @@ async function requestImgGallery(e) {
   query = e.target.elements.searchField.value.trim();
   currentPage = 1;
   showLoader();
+  hideLoadBtn();
   try {
     const data = await fetchGallery(query, currentPage);
-    console.log(data);
+    // console.log(data);
+    maxPage = Math.ceil(data.total / perPage);
     if (data.total === 0) {
       showError();
     }
     const markup = galleryTemplate(data.hits);
     refs.ulElem.innerHTML = markup;
     lightbox.refresh();
+    updateBtnStatus();
   } catch {
     warningError();
   }
@@ -41,12 +45,33 @@ async function requestImgGallery(e) {
   refs.formElem.reset();
 }
 
+refs.btnLoadMore.addEventListener('click', async () => {
+  currentPage++;
+  showLoader();
+  hideLoadBtn();
+  try {
+    const data = await fetchGallery(query, currentPage);
+    if (data.total === 0) {
+      showError();
+    }
+    const markup = galleryTemplate(data.hits);
+    refs.ulElem.insertAdjacentHTML('beforeend', markup);
+    lightbox.refresh();
+    updateBtnStatus();
+  } catch {
+    warningError();
+  }
+});
+
+//======================================================
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
 
 lightbox.refresh();
+
+//====================================================
 
 function showLoader() {
   refs.loader.classList.remove('hidden');
@@ -55,6 +80,28 @@ function showLoader() {
 function hideLoader() {
   refs.loader.classList.add('hidden');
 }
+
+//====================================================
+
+function showLoadBtn() {
+  refs.btnLoadMore.classList.remove('hidden');
+}
+
+function hideLoadBtn() {
+  refs.btnLoadMore.classList.add('hidden');
+}
+
+//====================================================
+
+function updateBtnStatus() {
+  if (currentPage >= maxPage) {
+    hideLoadBtn();
+  } else {
+    showLoadBtn();
+  }
+}
+
+//======================================================
 
 function showError() {
   iziToast.error({
@@ -82,3 +129,5 @@ function warningError() {
     icon: false,
   });
 }
+
+//========================================================
