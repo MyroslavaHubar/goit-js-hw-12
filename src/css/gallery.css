@@ -1,0 +1,39 @@
+.gallery {
+  padding: 24px 156px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.gallery-image {
+  width: 360px;
+  height: 200px;
+  cursor: pointer;
+  transition: transform 0.5s;
+}
+
+.gallery-item {
+  border: 1px solid #808080;
+}
+.item-footer {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 4px 0;
+}
+
+.item-footer-pair {
+  text-align: center;
+}
+
+.item-footer-pair p {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.33;
+  letter-spacing: 0.04em;
+  color: #2e2f42;
+}
+
+.item-footer-pair p:last-of-type {
+  font-weight: 400;
+  line-height: 2;
+}
