@@ -32,15 +32,16 @@ async function requestImgGallery(e) {
     // console.log(data);
     maxPage = Math.ceil(data.total / perPage);
     if (data.total === 0) {
+      hideLoader();
       showError();
     }
     const markup = galleryTemplate(data.hits);
     refs.ulElem.innerHTML = markup;
     lightbox.refresh();
-    updateBtnStatus();
   } catch {
     warningError();
   }
+  updateBtnStatus();
   hideLoader();
   refs.formElem.reset();
 }
@@ -57,10 +58,11 @@ refs.btnLoadMore.addEventListener('click', async () => {
     const markup = galleryTemplate(data.hits);
     refs.ulElem.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
-    updateBtnStatus();
   } catch {
     warningError();
   }
+  updateBtnStatus();
+  hideLoader();
 });
 
 //======================================================
@@ -96,6 +98,14 @@ function hideLoadBtn() {
 function updateBtnStatus() {
   if (currentPage >= maxPage) {
     hideLoadBtn();
+    if (maxPage !== 0) {
+      iziToast.info({
+        title: '',
+        message:
+          'We are sorry, but you have reached the end of search results.',
+        position: 'bottomCenter',
+      });
+    }
   } else {
     showLoadBtn();
   }
@@ -111,7 +121,7 @@ function showError() {
     messageLineHeight: '1.5',
     messageSize: '16',
     messageColor: '#fff',
-    position: 'topRight',
+    position: 'topCenter',
     backgroundColor: '#ef4040',
     icon: false,
   });
