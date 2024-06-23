@@ -24,6 +24,15 @@ async function requestImgGallery(e) {
   e.preventDefault();
 
   query = e.target.elements.searchField.value.trim();
+  if (!query) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Enter your details. Please try again!',
+      position: 'topRight',
+    });
+    return;
+  }
+
   currentPage = 1;
   showLoader();
   hideLoadBtn();
@@ -58,6 +67,7 @@ refs.btnLoadMore.addEventListener('click', async () => {
     const markup = galleryTemplate(data.hits);
     refs.ulElem.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
+    scrollOldElement();
   } catch {
     warningError();
   }
@@ -109,6 +119,18 @@ function updateBtnStatus() {
   } else {
     showLoadBtn();
   }
+}
+
+//======================================================
+
+function scrollOldElement() {
+  const liElem = refs.ulElem.children[0];
+  const heightElem = liElem.getBoundingClientRect().height;
+
+  scrollBy({
+    top: heightElem * 2,
+    behavior: 'smooth',
+  });
 }
 
 //======================================================
